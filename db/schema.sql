@@ -39,8 +39,6 @@ CREATE TABLE department (
   name VARCHAR(30)
 );
 
-
-
 CREATE TABLE role (
     id INT PRIMARY KEY AUTO_INCREMENT,
     title VARCHAR(30),
@@ -50,8 +48,6 @@ CREATE TABLE role (
     REFERENCES department(id)
     ON DELETE SET NULL
 );
-
-
 
 CREATE TABLE employee (
     id INT PRIMARY KEY AUTO_INCREMENT,
