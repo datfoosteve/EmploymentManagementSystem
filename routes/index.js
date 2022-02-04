@@ -74,6 +74,24 @@ let mainMenu = async() => {
         case "viewEmployees":
             viewEmployees();
             break;
+        case "updateRoles":
+            updateRole();
+            break;
+        case "updateDepartments":
+            updateDepartments();
+            break;
+        case "updateEmployees":
+            updateEmployees();
+            break;
+        case "deleteRoles":
+            deleteRole();
+            break;
+        case "deleteDepartments":
+            deleteDepartments();
+            break;
+        case "deleteEmployees":
+            deleteEmployees();
+            break;
 
     }
 };
