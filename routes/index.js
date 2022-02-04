@@ -216,6 +216,30 @@ const getEmployees = async() => {
     const employees = await db.promise().query("select * from employee");
     return employees[0];
 };
+const setRoles = async() => {
+    const roles = await db.promise().query("select * from role");
+    return roles[0];
+};
+const setDepartments = async() => {
+    const departments = await db.promise().query("select * from department");
+    return departments[0];
+};
+const setEmployees = async() => {
+    const employees = await db.promise().query("select * from employee");
+    return employees[0];
+};
+const updateRoles = async() => {
+    const roles = await db.promise().query("select * from role");
+    return roles[0];
+};
+const updateDepartments = async() => {
+    const departments = await db.promise().query("select * from department");
+    return departments[0];
+};
+const updateEmployees = async() => {
+    const employees = await db.promise().query("select * from employee");
+    return employees[0];
+};
 
 
 
