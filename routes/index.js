@@ -1,104 +1,167 @@
-const routes = require("express").Router();
+const inquirer = require("inquirer");
+const mysql = require("mysql2");
+const db = mysql.createConnection(
+  {
+    host: "localhost",
+    // MySQL username,
+    user: "root",
+    // TODO: Add MySQL password here
+    password: "",
+    database: "corpo_db",
+  },
+  console.log(`Connected to the corporate database.`)
+);
 
-
-
-
-routes.post('/api/new-movie', ({ body }, res) => {
-    const sql = `INSERT INTO movies (movie_name)
-      VALUES (?)`;
-    const params = [body.movie_name];
-    
-    db.query(sql, params, (err, result) => {
-      if (err) {
-        res.status(400).json({ error: err.message });
-        return;
+const questionMain = [
+  {
+    type: "list",
+    name: "userAnswer",
+    message: "Choose One...",
+    choices: [
+      { name: "Add Employee", value: "addEmployee" },
+      {
+        name: "Add Department",
+        value: "addDepartment",
+      },
+      {
+        name: "Add Role",
+        value: "addRole",
+      },
+      {
+        name: "View Roles",
+        value: "viewRoles",
       }
-      res.json({
-        message: 'success',
-        data: body
-      });
-    });
-  });
-  
-  // Read all movies
-  routes.get('/api/movies', (req, res) => {
-    const sql = `SELECT id, movie_name AS title FROM movies`;
-    
-    db.query(sql, (err, rows) => {
-      if (err) {
-        res.status(500).json({ error: err.message });
-         return;
-      }
-      res.json({
-        message: 'success',
-        data: rows
-      });
-    });
-  });
-  
-  // Delete a movie
-  routes.delete('/api/movie/:id', (req, res) => {
-    const sql = `DELETE FROM movies WHERE id = ?`;
-    const params = [req.params.id];
-    
-    db.query(sql, params, (err, result) => {
-      if (err) {
-        res.statusMessage(400).json({ error: res.message });
-      } else if (!result.affectedRows) {
-        res.json({
-        message: 'Movie not found'
-        });
-      } else {
-        res.json({
-          message: 'deleted',
-          changes: result.affectedRows,
-          id: req.params.id
-        });
-      }
-    });
-  });
-  
-  // Read list of all reviews and associated movie name using LEFT JOIN
-  routes.get('/api/movie-reviews', (req, res) => {
-    const sql = `SELECT movies.movie_name AS movie, reviews.review FROM reviews LEFT JOIN movies ON reviews.movie_id = movies.id ORDER BY movies.movie_name;`;
-    db.query(sql, (err, rows) => {
-      if (err) {
-        res.status(500).json({ error: err.message });
-        return;
-      }
-      res.json({
-        message: 'success',
-        data: rows
-      });
-    });
-  });
-  
-  // BONUS: Update review name
-  routes.put('/api/review/:id', (req, res) => {
-    const sql = `UPDATE reviews SET review = ? WHERE id = ?`;
-    const params = [req.body.review, req.params.id];
-  
-    db.query(sql, params, (err, result) => {
-      if (err) {
-        res.status(400).json({ error: err.message });
-      } else if (!result.affectedRows) {
-        res.json({
-          message: 'Movie not found'
-        });
-      } else {
-        res.json({
-          message: 'success',
-          data: req.body,
-          changes: result.affectedRows
-        });
-      }
-    });
-  });
+    ],
+  },
+];
 
-  routes.use((req, res) => {
-    res.status(404).end();
+let mainMenu = async () => {
+  const { userAnswer } = await inquirer.prompt(questionMain);
+  switch (userAnswer) {
+    case "addEmployee":
+      addEmployee();
+      break;
+    case "addDepartment":
+      addDepartment();
+      break;
+    case "addRole":
+      addRole();
+      break;
+    case "viewRoles":
+      viewRole();
+      break;
+  }
+};
+
+const addEmployee = async () => {
+  const roles = await getRoles();
+  const employees = await getEmployees();
+  const choiceRoles = roles.map((role) => ({
+    name: role.title,
+    value: role.id,
+  }));
+  const choiceEmployees = employees.map((employees) => ({
+    name: employees.last_name,
+    value: employees.id,
+  }));
+  const userAddEmployee = await inquirer.prompt([
+    {
+      type: "input",
+      name: "first_name",
+      message: "What is the Employees Name?",
+    },
+    {
+      type: "input",
+      name: "last_name",
+      message: "What is the employees last name?",
+    },
+    {
+      type: "list",
+      name: "manager_id",
+      message: "Who is their Manager?",
+      choices: choiceEmployees,
+    },
+    {
+      type: "list",
+      name: "role_id",
+      message: "What is their role?",
+      choices: choiceRoles,
+    },
+  ]);
+
+  const newEmployee = await db
+    .promise()
+    .query(" INSERT INTO employee SET?", userAddEmployee);
+  console.log("Employee Added!");
+  mainMenu();
+};
+
+const addDepartment = async () => {
+  const debtPrompt = await inquirer.prompt({
+    type: "input",
+    name: "name",
+    message: "What is the department",
   });
-  
+  const newDepartment = await db
+    .promise()
+    .query(" INSERT INTO department SET?", debtPrompt);
+  console.log("Department Added!");
+  mainMenu();
+};
 
+const addRole = async () => {
+  const departments = await getDepartments();
+  const choiceDepartments = departments.map((department) => ({
+    name: department.name,
+    value: department.id,
+  }));
+  const rolePrompt = await inquirer.prompt([
+    {
+      type: "input",
+      name: "title",
+      message: "What is their Role",
+    },
+    {
+      type: "input",
+      name: "salary",
+      message: "What is their Salary?",
+    },
+    {
+      type: "list",
+      name: "department_id",
+      message: "What is their Department?",
+      choices: choiceDepartments,
+    },
+  ]);
+  const newRole = await db
+    .promise()
+    .query(" INSERT INTO role SET?", rolePrompt);
+  console.log("Role Added!");
+  mainMenu();
+};
 
-   module.exports = routes;
+const viewRole = async () => { 
+  const roles = await getRoles()
+  console.table(roles);
+  mainMenu();
+}
+const viewEmployees = async () => { 
+  const employees = await getEmployees()
+  console.table(employees);
+  mainMenu();
+}
+
+const getRoles = async () => {
+  const roles = await db.promise().query("select * from role");
+  return roles[0];
+};
+const getDepartments = async () => {
+  const departments = await db.promise().query("select * from department");
+  return departments[0]; 
+};
+const getEmployees = async () => {
+  const employees = await db.promise().query("select * from employee");
+  return employees[0];
+};
+
+mainMenu();
