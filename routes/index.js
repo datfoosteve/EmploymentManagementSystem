@@ -35,10 +35,20 @@ const questionMain = [{
             value: "viewDepartments",
         },
         {
-
             name: "View Employee",
             value: "viewEmployees"
-
+        },
+        {
+            name: "Update Employee",
+            value: "UpdateEmployees"
+        },
+        {
+            name: "Update Roles",
+            value: "viewEmployees"
+        },
+        {
+            name: "Update Roles",
+            value: "viewEmployees"
         },
     ]
 }]
@@ -188,5 +198,7 @@ const getEmployees = async() => {
     const employees = await db.promise().query("select * from employee");
     return employees[0];
 };
+
+
 
 mainMenu();
