@@ -9,6 +9,7 @@ const db = mysql.createConnection(
     password: "",
     database: "corpo_db",
   },
+  // @ts-ignore
   console.log(`Connected to the corporate database.`)
 );
 
@@ -60,10 +61,12 @@ let mainMenu = async () => {
 const addEmployee = async () => {
   const roles = await getRoles();
   const employees = await getEmployees();
+  // @ts-ignore
   const choiceRoles = roles.map((role) => ({
     name: role.title,
     value: role.id,
   }));
+  // @ts-ignore
   const choiceEmployees = employees.map((employees) => ({
     name: employees.last_name,
     value: employees.id,
@@ -93,6 +96,7 @@ const addEmployee = async () => {
     },
   ]);
 
+  // @ts-ignore
   const newEmployee = await db
     .promise()
     .query(" INSERT INTO employee SET?", userAddEmployee);
@@ -106,6 +110,7 @@ const addDepartment = async () => {
     name: "name",
     message: "What is the department",
   });
+  // @ts-ignore
   const newDepartment = await db
     .promise()
     .query(" INSERT INTO department SET?", debtPrompt);
@@ -115,6 +120,7 @@ const addDepartment = async () => {
 
 const addRole = async () => {
   const departments = await getDepartments();
+  // @ts-ignore
   const choiceDepartments = departments.map((department) => ({
     name: department.name,
     value: department.id,
@@ -137,6 +143,7 @@ const addRole = async () => {
       choices: choiceDepartments,
     },
   ]);
+  // @ts-ignore
   const newRole = await db
     .promise()
     .query(" INSERT INTO role SET?", rolePrompt);
@@ -149,6 +156,7 @@ const viewRole = async () => {
   console.table(roles);
   mainMenu();
 }
+// @ts-ignore
 const viewEmployees = async () => { 
   const employees = await getEmployees()
   console.table(employees);
