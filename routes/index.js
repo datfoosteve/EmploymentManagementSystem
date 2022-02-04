@@ -150,6 +150,11 @@ const viewEmployees = async () => {
   console.table(employees);
   mainMenu();
 }
+const viewDepartments = async () => {  
+  const departments = await getDepartments()
+  console.table(departments);
+  mainMenu();
+}
 
 const getRoles = async () => {
   const roles = await db.promise().query("select * from role");
