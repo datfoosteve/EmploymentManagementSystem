@@ -50,6 +50,10 @@ let mainMenu = async () => {
     case "viewRoles":
       viewRole();
       break;
+    case "viewDepartments":
+      viewDepartments();
+      break;
+    
   }
 };
 
