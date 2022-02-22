@@ -19,7 +19,10 @@ const questionMain = [
     name: "userAnswer",
     message: "Choose One...",
     choices: [
-      { name: "Add Employee", value: "addEmployee" },
+      {
+        name: "Add Employee",
+        value: "addEmployee",
+      },
       {
         name: "Add Department",
         value: "addDepartment",
@@ -84,9 +87,9 @@ const addEmployee = async () => {
     value: role.id,
   }));
   // @ts-ignore
-  const choiceEmployees = employees.map((employees) => ({
-    name: employees.last_name,
-    value: employees.id,
+  const choiceEmployees = employees.map((employee) => ({
+    name: employee.LastName,
+    value: employee.id,
   }));
   const userAddEmployee = await inquirer.prompt([
     {
